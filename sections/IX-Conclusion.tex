@@ -1,0 +1,27 @@
+\section{Conclusion and perspectives}
+\label{sec:conclusion}
+In this paper, we studied the problem of building reproducible datasets composed of software repositories.
+We first identified five limitations researchers can face when obtaining such datasets, either by reusing existing ones, reproducing an existing selection process or creating a new dataset from scratch.
+We considered from this angle the Software Heritage archive (SWH), assessing which of its interesting properties can be leveraged to overcome the identified limitations.
+We introduced a new approach of dataset fingerprinting to characterize datasets with a pair (query, timestamp).
+We implemented the proposed approach using the OCL language to specify the query, and a compiler which generates a Java program that uses the SWH API to extract all the repositories matching the provided query from the SWH archive.
+
+Several perspectives can be envisioned concerning the operationalization of our approach.
+One of them is the possibility to optimize a given OCL query. 
+For instance, the predicate operands in an ``AND'' logical expression can be reordered to ensure that the least resource-intensive requests are executed first. 
+Other heuristics could leverage the implementation choices made in Software Heritage, for instance, to better orchestrate the memory access according to the nature of the storage where the attributes in the query are stored. 
+Indeed, labels are stored on disk while node types are always stored in RAM, making them faster to read.
+
+The operationalization relies on the Java API of the SWH (compressed) graph dataset, which enables complex and efficient graph traversal operations. 
+The graph is divided in several parts, one representing its structure, and the others the rest of the metadata.
+To achieve the best performances, both the graph and associated metadata ($\approx$\,4.5 TiB) must be loaded into memory, which requires a substantial infrastructure. 
+If the available infrastructure is not powerful enough, it is possible to load only the graph structure in memory, and to access the metadata from the disk.
+In this case, the use of the column based version becomes more efficient for some processing requiring many disk accesses. 
+Therefore, a hybrid approach based on both the compressed and columnar versions of the dataset can be envisioned to accelerate the evaluation of a given query.
+
+Another perspective is to add a hash of the resulting dataset to the fingerprint.
+
+Such hash can attest that two dataset versions are strictly identical, mitigating the impact of take down notices.
+
+Exploring other technology stacks for the approach operationalization could be useful to better fits the needs and expertises of different users.
+One could imagine replacing the OCL query language to describe the selected dataset by a domain specific language like Boa, which was designed for tasks related to mining software repository. Finally, running a large scale evaluation on several different fingerprints over different exports of the SWH Graph Dataset would allow us to verify and generalize our current observations.

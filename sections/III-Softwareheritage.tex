@@ -1,0 +1,42 @@
+\section{Software Heritage: a Meta-Forge Supporting Large \& Reproducible Mining}
+\label{sec:soft_heritage}
+In collaboration with the UNESCO and initiated by the National Institute for Research in Digital Science and Technology (Inria - France), the Software Heritage project\footnote{\url{https://www.softwareheritage.org/}} is built upon the idea that source code contains a form of human knowledge and is thus a part of our heritage which is worth preserving~\cite{di2017software}.
+Software Heritage (SWH) collects and preserves open source software with the aim of building a universal archive of source code along with its development history, as captured by modern version control systems. Open source software are collected regularly by crawling the main forges like Bitbucket, GitHub or GitLab. Software Heritage also allows smaller forges to be archived, for instance small GitLab instances hosted by an organisation.
+Software Heritage also aims to archive research software that are omnipresent in all fields and contain scientific knowledge that must be preserved. Archiving such software is crucial for reproducibility and the accessibility of the research.
+Currently (January 2023), the SWH archive\footnote{\url{https://archive.softwareheritage.org}} contains more than 186 million freely accessible projects.
+In the following, we focus on the properties of Software Heritage that can be leveraged to circumvent the limitations presented in Section~\ref{sec:motivations}. For a more general introduction to SWH we refer the reader to~\cite{di2017software}.
+
+In addition to its archiving mission, SWH aims to facilitate large scale software mining by providing relevant tools and representations of the archived data. 
+The objective is to tend to an ``\emph{universal software mining, i.e., making it feasible for researchers to study the entire corpus of software commons}''. 
+The use of such a meta-forge facilitates the repository mining of all the crawled forges  through a unique data model and API.
+This can help to overcome limitations related to the heterogeneity of existing forges (C-4), and thus help prevent bias induced by focusing on repositories from a single data source.
+However, it comes with challenges, such as the necessity for the meta-forge API to offer at least the same query features as those offered by the most used forges.  
+For instance, the SWH API does not allow for the moment to perform query on the content of archived files as GitHub or GitLab do. 
+
+The SWH archive metadata relative to the source code and the version control system (VCS) are represented in a generic way in the \emph{SWH Graph Dataset}~\cite{pietri2019software}, which is a fully-deduplicated Merkle DAG.
+Thus, it enables to query in an uniform manner software artifacts coming from different data sources, possibly via different VCS (e.g., Git, SVN, Mercurial).
+It also facilitates the study of legacy software which have migrated through different VCS (e.g., from CVS, to Subversion, to Git) and/or relocated to different hosting platforms (e.g., from GitHub, to gitlab.com, to a self-hosted GitLab instance).
+The SWH Graph Dataset offers the concept of \emph{snapshot}, allowing to capture the \emph{mutability} of the targeted VCS.  
+We believe that capturing mutability is a requirement for reproducibility: traditional VCS and forges do not ensure such property (e.g., it is possible to alter git history) which can lead to different results for the same query over time. 
+SWH handles this issue by offering an append-only data model, immutable by design, where graph elements have unique, persistent identifiers and cannot be altered. 
+These unique identifiers (called SWHIDs~\cite{DBLP:journals/cse/CosmoGZ20}), ensure that one can refer to resources which will not be altered silently (RU-1).
+An append-only model offers some guarantees regarding the reliability of the data sources over time (RP-3). SWH is also based on a distributed and open architecture, with independent archive copies. By design, there is no single point of failure and data persistence is ensured.
+
+Two different representations of the SWH Graph Dataset are available depending on the nature of the exploration required by the user: a columnar database and a compressed in-memory graph.
+The columnar dataset~\cite{pietri2019software} is composed of a set of relational tables in Apache ORC format. 
+For ease of use, they are available as a public dataset on Online Analytical Processing cloud platform such as AWS Athena or Azure DataBricks allowing to process the graph without dealing with infrastructure issues.  
+The columnar version contains the most metadata and enables precise search in a straightforward way as it supports SQL-based queries.
+However, it comes with limitations with regard to the graph nature of the archive. 
+Indeed, large graph traversals can be challenging on columnar databases contrary to graph databases, which are designed to handle such graph data models.
+
+A compressed version of the graph~\cite{DBLP:conf/wcre/BoldiPVZ20} is also available to facilitate in-memory treatments thanks to graph compression techniques commonly used in the field of large-graph analysis. 
+This compressed graph can be used through the SWH-graph API. 
+The compressed graph enables deep analysis on graphs which can became too costly on a columnar representation, such as transitive closure of a given node.
+However, the compressed graph version of the dataset does not contain as much metadata as the columnar version.
+Furthermore, if it is not trivial to load the entire compressed dataset in memory. While without metadata 200 GiB of RAM are enough to load the compressed graph in memory, more than 4 TiB are needed to also load all associated metadata. Hence queries that require frequent metadata access (e.g., to filenames) may be less efficient than in the columnar dataset. 
+The two dataset versions are thus complementary.
+It is noteworthy that, contrary to existing forges which only expose their metadata through APIs, the two versions of the SWH datasets are available as open data and can be retrieved locally by the users to be accessed directly without incurring API rate limiting.
+This enables to perform complex search and filtering operations on the metadata, which would have required several consecutive queries with an API, or strategies such as the divide-and-conquer one to bypass platform limitations.
+To the best of our knowledge, this dataset combination constitutes the most advanced tooling for large scale repository mining (C-5).
+
+Having a unified representation of repositories from different data sources, as well as a single architecture designed to access and analyze them can decrease the necessary efforts for defining the selection process of repositories systematically (RP-2), by sharing, for instance, the query or program which was run against a specified unalterable version of the archive.

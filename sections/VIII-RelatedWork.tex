@@ -1,0 +1,41 @@
+\section{Related Work}
+\label{sec:related_work}
+\paragraph{Platforms and tools for mining software repositories}
+
+GitHub proposes a REST API with a \textit{search endpoint} to search for specific items---including repositories---meeting certain criteria.
+Each search may present up to \num{1000} results: the API is thus not made to retrieve \emph{all} items meeting the given criteria and may be too limited for the purpose of selecting repositories for MSR-based studies. According to Cosentino et al.~\cite{cosentino2016findings}, recurring reported limitations of GitHub API in MSR studies include limited quota and events not accurately returned.
+To overcome these limitations, third party services were proposed to ease the mining of GitHub repositories through dataset mirrors.
+GH Archive\footnote{\url{https://www.gharchive.org/}} records all public events from GitHub and makes them accessible for large scale analysis.
+It is updated each hour and the dataset is available through downloadable archives and on BigQuery.
+Similar to GH Archive, GHTorrent~\cite{gousios2013ghtorent} records public events of GitHub retrieved through the GitHub API and redistributes the gathered metadata in a SQL database.
+Since 2019 GHTorrent is only sporadically maintained, with a most recent data dump dating back to March 2021.
+GitHub Activity Data is a snapshot of the content of 3M repositories of GitHub available on Big Query.\footnote{\url{https://hoffa.medium.com/github-on-bigquery-analyze-all-the-code-b3576fd2b150}}
+
+Boa~\cite{dyer2015boa} is a domain specific programming language for defining analysis tasks in the context of mining software repositories.
+Boa comes with an infrastructure which compiles a Boa program to be run on distributed clusters to improve efficiency.
+The defined analysis task is run on repositories whose information is locally cached.
+Several datasets are available corresponding to difference language and forge ecosystems, but they are updated sporadically.
+The most recent ``large'' dataset encompassing a significant GitHub subset dates back to October 2019 and covers 7.8 million public repositories.\footnote{\url{}https://boa.cs.iastate.edu/stats/}
+No guarantee of long-term availability of the platform or the data hosted on it are provided.
+
+\paragraph{Limitations and best practices to create and share raw datasets of code repositories}
+
+Vidoni~\cite{vidoni2022systematic} presents a systematic literature review investigating MSR-based studies which enables to identify recurring limitations in current practices.
+The author then proposes guidelines to improve MSR-based studies through the definition of a systematic process inspired by evidence-based software engineering.
+The scope of their analysis is wider than ours, because they focus on the processes of selecting repositories, extracting data from these repositories and mining information for the study, while we focused on the first step of obtaining the raw dataset.
+For this first step of MSR, we discuss more limitations and propose, instead of guidelines, a systematic process for selecting repositories in a reproducible way.
+
+Vial et al.~\cite{vial2019reflections} investigate data quality issues in the context of digital trace data (DTDs).
+They observe that DTDs are usually gathered form data sources over which researchers have little to no control, thus making their quality difficult to ascertain. This observation resonated with our limitation RP-3 about the unreliability of data sources. 
+They do not propose a process to ensure DTDs’ quality, but encourage researchers to clearly describe this data through the Seven Ws (what, when, where, how, who, which and why) of data quality as defined by Marsden and Pingry~\cite{marsden2018numerical}, such that the reader can assess their quality.
+
+ACM's empirical standards for mining repository studies\footnote{\url{https://acmsigsoft.github.io/EmpiricalStandards/docs/?standard=RepositoryMining}} include defining how and why repositories were selected, along with the detailed acquisition process, among the essential attributes which should be documented in studies.
+
+Tutko et al.~\cite{tutko2022software} presents a systematic literature review about how software repositories are mined in MSR-based studies. Their findings include the non-reproducibility of most of the studied papers (e.g., lack details regarding the data selection and extraction processes, missing timestamps) and they propose a list of information which should be included in such studies to improve reproducibility.
+Cosentino et al.~\cite{cosentino2016findings} present a systematic literature review about how research papers have addressed the task of mining repositories focused on GitHub.
+They derive several concerns about data collection, size of the used datasets which are usually not large enough and replicability.
+They found out that most of the papers report issues with the limitations of the GitHub API and with the data available from third party services such as BOA and GHTorrent, which align with the limitations C-5 and RP-3, respectively.
+
+
+
+

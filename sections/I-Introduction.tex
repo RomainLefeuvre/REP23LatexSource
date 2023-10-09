@@ -1,0 +1,32 @@
+\section{Introduction}
+\label{introduction}
+
+Empirical research in software engineering has experienced significant growth over the past two decades~\cite{zhang2018empirical}. In addition to the important impact of dedicated scientific venues such as MSR\footnote{https://www.msrconf.org/} and EMSE\footnote{https://www.springer.com/journal/10664/}, the proportion of papers applying empirical techniques has increased significantly in all  major software engineering venues.
+Moreover, all the major conferences and journals in the field now consider reproducibility\footnote{According to the terminology used by ACM, we use in this paper the term \emph{reproducibility} to refer to the fact that the measurement can be obtained with stated precision by a different team, a different measuring system, in a different location on multiple trials~\cite{barba2018terminologies}.} to be a major evaluation factor of the submitted research results with rigorous replication guidelines~\cite{shull2008role, juristo2012replication, da2014replication}.
+At the same time, much effort has been put into providing benchmarks to facilitate the evaluation of research contributions and their comparison to the current state of the art. The corresponding datasets cover several application domains such as Android apps~\cite{allix2016androzoo} and/or target specific problems such as code review~\cite{wang2021can}. In general, those datasets contain code elements and other data derived from the code that characterizes the internal properties of those elements in the form of metrics or abstract representations. They can also contain data that characterizes external properties of the code elements like, e.g., bug reports.
+
+Generally speaking, empirical studies in software engineering follow three common steps: select relevant repositories, extract the necessary data from these repositories, and finally analyze this data to answer the research questions~\cite{vidoni2022systematic}. 
+While the extracted data (\textit{refined} dataset) is strongly tied to the conducted study, the selection of repositories (\textit{raw} dataset) may be more prone to be reused as the first step of replications or other studies.
+That is, different studies may extract their refined datasets from the same raw dataset.
+
+In the context of code repositories, building reproducible raw datasets is difficult for two main reasons. First, extracting large-scale datasets for specific purposes from code forges is resource-intensive, and in most of the cases, a laborious endeavor. 
+Second and more importantly, the content of repositories changes over time, up to several times a day. This makes it difficult to reproduce the same dataset over time, even when using the same extraction process.
+
+In this paper, we propose to characterize a raw dataset in a unique way, through a fingerprint composed of a query and a timestamp.
+While the query defines what constraints a repository must verify to be part of the dataset, the timestamp sets the state of the data sources which are mined to build the dataset. 
+In addition, we define an extraction process which enables to retrieve from such fingerprint the same dataset at any point in time, hence ensuring its reproducibility.
+We propose a generic approach that can be applied to any software forge or meta-forge as long as it guarantees immutability. 
+We implement our approach on top of the Software Heritage archive which is to the best of our knowledge the sole meta-forge providing such property. Software Heritage~\cite{di2017software} stores hundreds of millions open source projects with their development histories and make them available through a unified programming interface.
+Software Heritage, that we will not present in detail, is therefore used as an existing and independent platform to implement our prototype.
+
+We show that using fingerprints coupled with our extraction process overcomes limitations faced by researchers when building, reusing or reproducing a dataset composed of software repositories.
+Our approach enables any researcher to compare their work to different approaches on exactly the same data without having to reimplement those approaches or executing them on the datasets.
+
+We illustrate our approach through a case study about open source Android applications mined from Software Heritage.
+We developed a prototype and we demonstrate its ability to build a large dataset from various origins, still with a unified interface.
+We show that variations in time in the fingerprint lead to different versions of a dataset.
+We also test if our implemented approach is deterministic and if it can retrieve the same dataset from a given fingerprint at different points in time.
+The open source implementation of the prototype is available together with the entire replication package on Zenodo.\footnote{https://doi.org/10.5281/zenodo.7989955}
+
+The rest of this paper is organized as follows. Section~\ref{sec:motivations} discusses the limitations of retrieving datasets of code repositories through a running example. Section~\ref{sec:soft_heritage} provides background on Software Heritage and the associated features that that we use in this work. Our fingerprinting technique is described in Section~\ref{sec:approach} together with the fingerprint-based extraction process in Section~\ref{sec:operationalization}. We illustrate our approach through a case study in Section~\ref{sec:case_study}. Before concluding, we discuss related work in Section~\ref{sec:related_work}.
+

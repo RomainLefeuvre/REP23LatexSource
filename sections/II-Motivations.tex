@@ -1,0 +1,115 @@
+\section{Motivations}
+\label{sec:motivations}
+
+In this section, we stress several limitations researchers may face during the process of acquiring a raw dataset composed of software repositories. 
+We do not focus on the techniques to extract data from these repositories, but on how to obtain a curated list of relevant software repositories in the first place. 
+We rely on a fictional illustrative example of a study targeting the development of modern and active open source Android applications.
+To do so, one may be interested in analyzing the code in open source repositories of \emph{Android applications} which have a \emph{creation date not prior to 2015} and \emph{at least 1000 commits}.
+These three selection criteria are convenient for identifying limitations, because they help cover a wide spectrum of potential obstacles by requiring to examine repository data (detecting Android applications through the presence of certain files in the repository, namely \texttt{AndroidManifest.xml}), repository metadata (creation date), and perform join operations (number of commits in the history).
+In what follows, we discuss limitations which can arise in three scenarios: reusing an existing dataset, reproducing an existing dataset, and creating a new dataset.
+
+\subsection{Limitations when Reusing Existing Datasets}
+
+We found two refined datasets in the literature which could be useful for our case: AndroZooOpen~\cite{liu2020androzooopen} and AndroidTimeMachine~\cite{geiger2018graph}. 
+AndroZooOpen provides metadata of open source Android applications, while AndroidTimeMachine gathers Android applications' commit history. 
+If one wants to perform another kind of analysis on Android applications (e.g., source code analysis), these two refined datasets are not adapted. Nevertheless, their raw datasets could be reused and built upon.
+
+AndroZooOpen~\cite{liu2020androzooopen}, published in 2020, refers to \num{46523} repositories of Android applications gathered from GitHub and F-Droid.
+The dataset takes the form of a collection of CSV files documenting different types of metadata retrieved from GitHub and Google Play, as well as other artifacts (e.g., the APK retrieved from AndroZoo~\cite{allix2016androzoo}).
+F-Droid\footnote{\url{https://f-droid.org/}, accessed 2023-01-18} is an app store devoted to distribute open source Android applications and information about them, including URLs towards upstream repositories containing their source code. 
+All listed applications were thus considered relevant to be included in this dataset.
+Identifying repositories containing the code of Android applications on GitHub is less straightforward. 
+First, the authors searched on GitHub all repositories categorized under the \emph{Android} topic.
+Then, they cloned these repositories and analyzed their files: they retained only the repositories containing both a main launcher \texttt{Activity.java} file and a file \texttt{AndroidManifest.xml}, which characterize Android applications.
+
+AndroidTimeMachine\footnote{\url{https://androidtimemachine.github.io/}}~\cite{geiger2018graph} is a dataset of commit history of real-world Android apps taken from GitHub.
+It combines the GitHub information for \num{8432} repositories with metadata from the Google Play Store. 
+
+As for the previous dataset, the authors had to identify which repositories on GitHub were presenting source code of Android applications.
+However, they use a different strategy.
+Rather than relying on GitHub topics to filter repositories, they directly identified all repositories containing a file \texttt{AndroidManifest.xml}.
+
+Also, instead of using the GitHub API, they exploited a GitHub mirror available on BigQuery\footnote{\url{https://console.cloud.google.com/marketplace/product/github/github-repos}} to perform their search.
+
+
+\bigskip
+
+\textbf{Limitation RU-1: links point towards resources which can be altered.}
+Both existing raw datasets contain the URLs where the repositories were accessed.
+However, we noticed that some of them point to projects which were deleted since the authors performed their selection.
+Also, even if the projects still exist, their history may have been modified (e.g., by using \texttt{git rebase}, \texttt{git push --force} or equivalent): if so, it is impossible to retrieve the state of the repository at the time of initial dataset selection.
+For instance, version control system metadata or its commit history may be different.
+Therefore, \emph{it is not possible to ensure the reproducibility of a raw dataset by providing the URLs of the selected repositories, because they do not guarantee that they will still be accessible and their history preserved in the future}. Providing links towards a mirror (such as the one used by AndroidTimeMachine) may mitigate this issue. However, lack of information regarding how public mirrors evolve over time can also be a limitation (see RP-3).
+
+Several works highlighted the necessity of providing timestamps to ensure dataset reproducibility~\cite{tutko2022software, vial2019reflections, kalliamvakou2016depth}, because they help identify which state of the repository was retrieved at the time of the selection. %, when the data sources evolve over time.
+Timestamps are however \emph{not sufficient} when repositories are not accessible anymore, or if their history have been modified, because they are not \emph{persistent intrinsic identifiers}~\cite{DBLP:journals/cse/CosmoGZ20} based on the content of the referenced artifacts (which would correspond to the entire version control repositories, in our example).
+
+This limitation can be generalized to every dataset which include links towards resources which can change over time. For instance, AndroidTimeMachine provides links towards the Google Play pages of some of its repositories, but in December 2022, only 30\% of these links were not producing a 404 error.
+
+It is noteworthy that the authors of the AndroidTimeMachine dataset provide snapshots of the repositories at the time of the dataset creation, which mitigates the previous limitation. However, this may not be possible for all datasets: this solution requires a consequent storage capacity and sharing facility for large datasets, which are more and more prevalent in the recent literature due to the ever-growing popularity of machine learning approaches for software sciences. 
+\vspace{-1 em}
+\subsection{Limitations when Reproducing an Existing Dataset}
+
+Even when data sources do not change over time, reproducing the steps for selecting the repositories may be necessary. 
+This task is especially important in the context of reproducing empirical studies and for benchmarking.
+We faced two limitations when attempting to reproduce the selection processes described in AndroZooOpen and AndroidTimeMachine.
+  \newline
+  
+\textbf{Limitation RP-2: the selection process is not systematic and/or not clearly defined.}
+To retrieve all repositories matching the \textit{Android} topic, the authors of the first dataset defined what they called a divide-and-conquer search strategy to bypass the limitations of the GitHub's search functionality.
+Indeed, even if the number of repositories matched by a search query is indicated, only the \num{1000} first results are actually returned by the API.
+Consequently, they divided the initial query into several more specific queries (e.g., ``all repositories with one star created before 2018 categorized in the \textit{Android} topic'') to reduce the number of matched repositories.
+If one of this query matched a number of repositories superior to \num{1000}, they split the query again.
+This strategy necessitates manual efforts to inspect the results of queries and to refine them, while ensuring that the set of queries is complete (i.e., they cover all the repositories).
+Because the number of matched repositories for each query will evolve over time, in case the process needs to be redone, some queries used in this study will have to be manually refined again.
+This process, while overcoming the limitations imposed by GitHub's API, is time-consuming, error-prone, and require manual efforts and validation from experts to define adapted queries.
+The authors of AndroidTimeMachine provide the query and a link toward the BigQuery dataset on which they apply their query.
+Such a formal way to express the selection and a systematic way to apply it should be considered to limit ambiguity and mistakes when reproducing a selection process.
+A recent study found out that only 17\% of MSR papers describe a systematic selection process~\cite{vidoni2022systematic}.
+
+
+
+\bigskip
+
+\textbf{Limitation RP-3: data sources are not reliable.}
+The authors of the second dataset, whose selection process relies on BigQuery, provides the query they used and how to re-run it.
+To the best of our knowledge, few information are available concerning the GitHub mirror hosted on Google BigQuery.
+The 3M snapshots in the mirror are GitHub repositories associated with an open source license, but we found little information regarding how representative they are of GitHub.
+Also, the mirror is updated weekly, but no further information is provided on how this update affects the dataset, e.g., if it is append-only.
+To date, we are not able to ensure that a query, even considering a timestamp, will yield to the same result over time, and thus if repository selection processes relying on this data source can build reproducible datasets and under which conditions.
+
+\subsection{Limitations when Creating new Datasets}
+
+In the case where one cannot rely on existing datasets, they may build a new one tailored to their needs.
+
+\bigskip
+
+\textbf{Limitation C-4: forges are heterogeneous.} 
+
+Because of the heterogeneity of the available data sources, the definition and implementation of selection processes have to be adapted to consider the differences in available APIs, metadata. and limitations of each platform. This makes it difficult to include diverse data sources in a dataset, and consequently, researchers tend to rely upon the forge that contains the most source code and offers the best/easiest to use API for a given task.
+For instance, both existing datasets use GitHub as their main data source. AndroZooOpen also considers a small existing dataset, F-Droid, although these repositories consist of roughly 4\% of their final dataset. GitHub is the platform with the most repositories and users~\cite{tutko2022software}, and  numerous tools are available to help practitioners mine GitHub data~\cite{dyer2015boa, gousios2013ghtorent}, which makes it the main data source for 67\% of MSR papers~\cite{vidoni2022systematic}. Although focusing on the prevalent forge is understandable, it induces a bias which might exclude a significant part of the objects of study. Code forges do not have the same features and are used differently by varied communities. For instance, GitLab offers different continuous integration and delivery features than GitHub, and may attract different kind of software projects than GitHub or SourceForge.
+
+
+
+
+\bigskip
+
+\textbf{Limitation C-5: forges do not provide appropriate tooling for large scale mining.}
+Forges usually expose APIs mostly designed to meet the needs of the industry, allowing DevOps engineers to access repository data for automation purpose (e.g. continuous integration, dashboards).
+These APIs may enable the access to the data model of a specific project, or provide search functionalities.
+However, these features have many limitations which makes their usage for large-scale repository mining challenging. 
+
+If we were to use GitHub to select repositories for our running example, we would need to define two subqueries.
+The first one---\emph{``repositories of android applications'' (SQ1)}---can be fulfilled using the code search API to find all the files named \texttt{AndroidManifest.xml} and the corresponding repositories.
+The second one---\emph{``repositories which have a creation date not prior to 2015 and at least 1000 commits'' (SQ2) }---can be handled by using the GraphQL API to get the creation date and the total number of commits of each repository identified in SQ1.
+GitHub is known to impose a fixed rate limit for each user.
+For SQ1, between \num{3} and \num{9} million results are expected. Knowing that at most \num{100} results are returned per request, it would require to run between 30K and 90K queries. With the rate limit of 30 queries per minute for the search endpoint, it would take between 17h and 50h to complete an execution.
+We estimated that SQ2 would then requires more than \num{32} days to be executed on the results of SQ1.
+In addition to rate limitations, one can face operational limitations. The search endpoint returns only the first \num{1000} elements for each query, while our query matches millions of elements.\footnote{\url{https://docs.github.com/en/rest/search?apiVersion=2022-11-28}}
+A common tweak is to divide massive queries using available attribute filters, such as the divide-and-conquer strategy adopted by AndroZooOpen.
+This requires complex heuristics which makes their implementation  constraining. 
+Finally, it appears that the total count of returned elements may differ when running the same query several times, leading to non-reproducible results. 
+
+GitLab offers a legacy REST API as well as a GraphQL API.
+However, the GitLab advanced search API 
+is not available on the whole forge, and thus query such as SQ1 are not supported,\footnote{\url{https://gitlab.com/gitlab-org/gitlab/-/issues/197231}, accessed 2023-01-18} making the repository selection of our example impracticable on this forge.

@@ -1,0 +1,130 @@
+
+\documentclass[sigconf,authorversion,nonacm]{acmart}
+
+\usepackage[utf8]{inputenc}
+\pagenumbering{arabic}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{soul}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.26,0.46,0.63}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+\usepackage{siunitx}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codepurple},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Fingerprinting and Building Large Reproducible Datasets}
+
+\author{Romain Lefeuvre}
+% \orcid{0000-0002-7104-7848}
+ \affiliation{
+ \institution{University of Rennes}
+ \country{France}}
+ \email{romain.lefeuvre@inria.fr}
+
+ \author{Jessie Galasso}
+% \orcid{0000-0002-7104-7848}
+ \affiliation{
+ \institution{DIRO, Université de Montréal}
+ \country{Canada}}
+ \email{jessie.galasso-carbonnel@umontreal.ca}
+
+ \author{Benoit Combemale}
+% \orcid{0000-0002-7104-7848}
+ \affiliation{
+ \institution{University of Rennes}
+ \country{France}}
+ \email{benoit.combemale@irisa.fr}
+
+\author{Houari Sahraoui}
+% \orcid{0000-0001-6304-9926}
+ \affiliation{
+ \institution{DIRO, Université de Montréal}
+ \country{Canada}}
+ \email{sahraouh@iro.umontreal.ca}
+ 
+ \author{Stefano Zacchiroli}
+% \orcid{0000-0002-7104-7848}
+ \affiliation{
+ \institution{LTCI, Télécom Paris, Institut Polytechnique de Paris}
+ \country{France}}
+ \email{stefano.zacchiroli@telecom-paris.fr}
+ 
+ 
+
+\newcommand\rl[1]{(RL){\textcolor{blue}{\textsl{ #1}}}}
+\newcommand\jg[1]{(JG){\textcolor{purple}{\textsl{ #1}}}}
+\newcommand\bc[1]{(BC){\textcolor{teal}{\textsl{ #1}}}}
+\newcommand\hs[1]{(HS){\textcolor{green}{\textsl{ #1}}}}
+
+
+\copyrightyear{2023}
+\acmYear{2023}
+\setcopyright{acmlicensed}\acmConference[ACM REP '23]{2023 ACM Conference on Reproducibility and Replicability}{June 27--29, 2023}{Santa Cruz, CA, USA}
+\acmBooktitle{2023 ACM Conference on Reproducibility and Replicability (ACM REP '23), June 27--29, 2023, Santa Cruz, CA, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/3589806.3600043}
+\acmISBN{979-8-4007-0176-4/23/06}
+
+\begin{document}
+
+
+
+\begin{abstract}
+
+Obtaining a relevant dataset is central to conducting empirical studies in software engineering. 
+However, in the context of mining software repositories, the lack of appropriate tooling for large scale mining tasks hinders the creation of new datasets. 
+Moreover, limitations related to data sources that change over time (e.g., code bases) and the lack of documentation of extraction processes make it difficult to reproduce datasets over time.
+This threatens the quality and reproducibility of empirical studies.  
+
+In this paper, we propose a tool-supported approach facilitating the creation of large tailored datasets while ensuring their reproducibility.  
+We leveraged all the sources feeding the Software Heritage append-only archive which are accessible through a unified programming interface to outline a reproducible and generic extraction process.
+We propose a way to define a unique fingerprint to characterize a dataset which, when provided to the extraction process, ensures that the same dataset will be extracted. 
+
+We demonstrate the feasibility of our approach by implementing a prototype.
+We show how it can help reduce the limitations researchers face when creating or reproducing datasets.
+\end{abstract}
+
+\keywords{dataset, reproducibility, empirical studies, open science}
+
+\maketitle
+
+\input{sections/I-Introduction.tex}
+\input{sections/II-Motivations.tex}
+\input{sections/III-Softwareheritage.tex}
+\input{sections/IV-ApproachOverview.tex}
+\input{sections/V-Operationalization.tex}
+\input{sections/VI-IllustrativeCaseStudy.tex}
+\input{sections/VII-Discussions.tex}
+\input{sections/VIII-RelatedWork.tex}
+\input{sections/IX-Conclusion.tex}
+
+
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references.bib}
+\end{document}

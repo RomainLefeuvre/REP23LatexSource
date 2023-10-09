@@ -1,0 +1,11 @@
+\subsection{Discussion} 
+\label{sec:discussion}
+The operationalization is based on Software Heritage tools which have their own limitations.
+
+\paragraph{Internal limitations}
+The SWH crawling process requires significant resources to create and maintain up to date an archive of publicly available software. This process rise multiple challenge such as the constraints imposed by forges API (rate limit, expressivity \& heterogeneity of the API). As a consequence, the modification performed on a repository are crawled periodically. Our operationalization is based on a fixed and reproducible state of the SWH archive. There is no guarantee that the current state of all the repositories of a forge have been crawled at a given time.
+
+Finally, the SWH Graph Dataset is not built incrementally and needs to be built from scratch to be updated. Thus, there is no real-time version of the SWH Graph Dataset describing the current state of the SWH archive, but rather periodic exports are made available (on a yearly basis, at the time of writing). 
+
+\paragraph{External limitations}
+Software Heritage, like all content providers, is subject to regulations. Take down notices can be therefore submitted for various reasons (copyright, GDPR compliance on personal data deletion) requiring the removal of content from the archive. 

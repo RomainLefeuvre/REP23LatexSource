@@ -1,0 +1,173 @@
+\section{Illustrative Case Study}
+\label{sec:case_study}
+In this section, we report on the application of our prototype to extract a raw dataset for the illustrative example about open source Android applications.
+Our main goal is to verify whether the proposed operationalization satisfies the properties of the approach presented in the Sections~\ref{sec:soft_heritage} and~\ref{sec:approach}, to overcome the limitations identified in Section~\ref{sec:motivations}. 
+While the results are not generalizable as with a full evaluation, they provide valuable insights on the benefits, as well as the limitations to be addressed in the future.
+We structure our observations through three research questions: 
+\begin{itemize}
+    \item \textbf{RQ1}: \textit{What is the impact of the temporal dimension of the fingerprint on the extracted dataset?} With this question, we want to obtain an order of magnitude of the difference and size and diversity of the extracted dataset when applying the same query with different timestamps. 
+   
+    \item \textbf{RQ2}: \textit{Is the implemented selection process deterministic?}  We want to verify that running the fingerprint several times results in the same dataset.
+
+    \item \textbf{RQ3}: \textit{Is it possible to retrieve the same dataset when applying the fingerprint on different versions of the SWH archive?} With this question, we want to assess if our selection process is able to extract the same dataset overtime.
+\end{itemize}
+
+
+\subsection{Experimental Settings}
+
+To answer these questions, we analyzed the results of different fingerprints ran over several export versions of the SWH Graph Dataset. 
+In our case, the fingerprints have the same query (Fig.~\ref{fig:OCL_query}) and differ in their timestamps.
+We consider two datasets to be equivalent if they contain the same list of repositories.
+
+For our experiment we leverage on the 2018-09-25, 2021-03-23, 2022-04-25 and the 2022-12-07 export versions of the SWH archive. 
+As SWH provides an export date with an uncertainty of a day, we define the graph exports $G_1\langle t_1\rangle, G_2\langle t_2\rangle, G_3\langle t_3\rangle$ and $G_4\langle t_4\rangle$ with the following timestamps: $t_1=$ \texttt{2018-09-24 UTC+1}, $t_2=$ \texttt{2021-03-22 UTC+1}, $t_3=$ \texttt{2022-04-24 UTC+1}, $t_4=$ \texttt{2022-12-06 UTC+1}.
+
+To obtain an order of magnitude of the impact of the time dimension (\textbf{RQ1}) of the fingerprint, we run 3 different fingerprints sharing the same query but having a different timestamp. 
+ Given $q$ our running query, we consider the three fingerprints:
+\begin{center}
+     $FP_1 = \langle t_1,q\rangle$    \;\;\;\;     $FP_2 = \langle t_2,q\rangle$   \;\;\;\;    $FP_3 = \langle t_3,q\rangle$ 
+\end{center}
+ The first experiment therefore consists in performing the following runs and comparing the different lists of Origins they returned:
+\begin{center}
+     $FP_1 \times G_3$    \;\;\;\;     $FP_2 \times G_3$   \;\;\;\;    $FP_3 \times G_3$ 
+\end{center}
+
+ In order to check if our prototype returns the same result for a given fingerprint, we run the same fingerprint twice on the same export version (\textbf{RQ2}). For this second experiment, we perform the following run two times and compare the returned lists of Origins: 
+\begin{center}
+     $FP_2 \times G_3$  
+\end{center}
+
+Finally, we checked if we obtain the same dataset with a same fingerprint overtime (\textbf{RQ3}). For this experiement, we run a given fingerprint on two export versions, and compare the two returned list of Origins:
+  \begin{center}
+     $FP_3 \times G_3$    \;\;\;\;     $FP_3 \times G_4$  
+\end{center}
+  
+
+Our experiments have been realized on two different machines. 
+Setting 1: ProLiant DL380 Gen10 Plus - Debian 11
+\begin{itemize}
+   \item CPU : 2  X Intel(R) Xeon(R) Gold 6342, 2.80GHz
+   \item RAM :  32 X DDR4 3200 MHz 128GiB
+   \item DISK : 12 x 5.8 TB SSD 
+\end{itemize}
+All our experiments have been executed on this non-reserved machine (other experiments were running at the same time on the machine). 
+As the machine is non-exclusive we cannot estimate an exact execution time of our query in this case. 
+Nevertheless, in these conditions the execution time was in average $\approx$7 hours.
+
+Setting 2: ProLiant DL365 Gen10 Plus - Ubuntu Server 22.04.3
+\begin{itemize}
+    \item CPU : 2 x AMD EPYC 7543 32 core, 64 thread, 2.8GHz
+    \item RAM : 512 GB
+    \item DISK : 3 X 2To SSD Raid 5, 3To HDD
+\end{itemize}
+This second setting allowed us to perform experiments on exclusive resource and measure an execution time with all the machine resources. 
+The run of $FP_3 \times G_3$ took 23 hours and 25 minutes. 
+A thorough evaluation is needed to assess the computation time required for the execution. 
+
+ \subsection{Experiments Results}
+
+\subsubsection{\textbf{RQ1 — Impact of the temporal dimension}}
+\vspace{-5 pt}
+\begin{table}[ht]
+\centering
+\small
+\caption{Variation of the temporal dimension between three fingerprints having the same query : Results of  $FP_1 \times G_3$, $FP_2 \times G_3$ and $FP_3 \times G_3$}
+\vspace{-5 pt}
+
+\begin{tabular}{ |c|c|c|c| }
+\hline
+ \textbf{Forge} &\textbf{FP1(2018)} & \textbf{FP2(2021)} & \textbf{FP3(2022)} \\
+\hline
+            github.com &    830 &  135820 & 172012 \\
+            gitlab.com &      3 &      67 &   1154 \\
+         bitbucket.org &      - &      76 &    106 \\
+          codeberg.org &      - &      55 &     84 \\
+          framagit.org &      - &      21 &     23 \\
+     git.launchpad.net &      - &      10 &     14 \\
+gitlab.freedesktop.org &      - &         - &     14 \\
+            0xacab.org &      - &         - &      3 \\
+       ...             &      - &         5 &      12 \\
+       \hline
+\textbf{Total} & \textbf{833} & \textbf{136054} & \textbf{173422} \\
+ \hline
+\end{tabular}
+\label{table:G2xFP2_G2xFP1}
+\end{table}
+
+Table~\ref{table:G2xFP2_G2xFP1} summarizes the results of the execution of $FP_1$, $FP_2$ and $FP_3$ over $G_3$. 
+For each run, more than 99\% of the repository Origins come from GitHub.
+It is consistent with the proportion of the entire SWH Graph Dataset where more than 93\%  (cf. Table~\ref{table:G2}) of the repositories are extracted from GitHub (in April 2022). 
+There is a substantial variation in the numbers of results between $FP_1$ and $FP_3$: we note an increase of 20719.0\% in only 4 years. 
+Similarly, although the two last fingerprints are only 13 months apart, there is a non-negligible variation (+27,4\%). Furthermore, the evolution of the numbers of results is not uniform: the results on GitHub have increased by 26.7\% compared to 1622.4\% on GitLab.com.
+These variations strengthen the importance of freezing the temporal dimension of the forges or meta-forges that we use to build a dataset. 
+ 
+We also observe an increase of the numbers of different forges that produce results for our request, due to the continuous addition of new forges to the SWH archive. For instance, Bitbucket.org wasn't crawled in 2018 (see Table~\ref{table:G2}) while it produces results for $FP_2$ and $FP_3$. Thus, it is simply a matter of changing the timestamp of the fingerprint to update a dataset,  avoiding the need to manage the various APIs of the new forges.
+\begin{table}[ht]
+\small
+\centering
+\caption{Evolution of the number of forges and the number of repositories per forges  crawled by SWH : Total numbers of Origins per forge in $G_1$, $G_3$ and $G_4$}
+\vspace{-5 pt}
+
+\begin{tabular}{ |c|c|c|c| }
+\hline
+ \textbf{Forge} & \textbf{G1(2018-09)} & \textbf{G3(2022-04)} & \textbf{G4(2022-12)} \\
+\hline
+                github.com &  56404072 &  164713349 & 177810125 \\
+        gitlab.com &    537541 &    4279918 &   4786089 \\
+     bitbucket.org &           - &    2566198 &   2589887 \\
+     www.npmjs.com &           - &    1835697 &   1835697 \\
+          pypi.org &     63860 &     467142 &    530254 \\
+code.launchpad.net &           - &          1 &    334081 \\
+   git.code.sf.net &         1 &     183172 &    183200 \\
+     gitorious.org &    116360 &     120380 &    120380 \\
+   svn.code.sf.net &           - &     102765 &    102901 \\
+               ... &    726860 &    1177007 &   1300455 \\
+
+ \hline
+\textbf{Total} & \textbf{57848694} & \textbf{175445629}& \textbf{189593069} \\
+ \hline
+\end{tabular}
+\label{table:G2}
+\end{table}
+\vspace{-1 em}
+
+
+ \subsubsection{\textbf{RQ2 — Determinism of the prototype}}
+
+Running the fingerprint $FP_3$ on  $G_3$  twice resulted in identical results as those shown in Table~\ref{table:G2xFP2_G2xFP1}.
+This observation suggests that the implemented selection process is indeed deterministic. 
+However, a more thorough evaluation is necessary to attest that our prototype verifies this property in all cases. 
+
+\subsubsection{\textbf{RQ3 — Reproducing a dataset overtime}}
+
+We first ran the fingerprint $FP_3$ on the export version $G_3$ which shares its timestamp $t_3$: this emulates that $FP_3$ was ran on the latest version of the archive.
+Then, we ran the same fingerprint on the export version $G_4$ which has a higher timestamp, corresponding to a version later in time.
+Table~\ref{table:RQ3} shows that executing the fingerprint on a version of the archive which is superior to the fingerprint timestamp allows to reproduce the results with a precision of 96.8\%.
+These results indicate that our prototype is nearly capable of entirely capturing the temporal dimension. 
+Therefore, the prototype is close to being able to obtain identical results when executing on newer export versions fingerprints which were originally run on previous states of the archive.
+The 3.2\% uncertainty can be explained both by the implementation of our prototype, but also by the limitations of Software Heritage which we will discuss in Section~\ref{sec:discussion}.
+It is therefore preferable, in the current state of the prototype, to run a fingerprint on the export version corresponding to the same timestamp to ensure reproducibility.
+
+\begin{table}[ht]
+\centering
+\caption{Execution of the same fingerprint on a different export of the SWH Graph Dataset : Result of $FP_3 \times G_3$ and $FP_3 \times G_4$}
+\vspace{-5 pt}
+
+\begin{tabular}{ |c|c|c|c| }
+\hline
+ \textbf{Forge} & \textbf{FP3 X G3} & \textbf{FP3 X G4} & \textbf{Difference (\%)} \\
+\hline
+       github.com & 172012 & 166630 &            -3.2 \\
+   gitlab.com &   1154 &   1223 &             5.6 \\
+bitbucket.org &    106 &    102 &            -3.9 \\
+ codeberg.org &     84 &     84 &             0.0 \\
+ framagit.org &     23 &     22 &            -4.5 \\
+          ... &     43 &     38 &           -13.2 \\
+ \hline
+\textbf{Total} & \textbf{173422} & \textbf{168099}& \textbf{-3.2} \\
+ \hline
+\end{tabular}
+\label{table:RQ3}
+\vspace{-1.5 em}
+
+\end{table}
